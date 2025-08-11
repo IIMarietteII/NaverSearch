@@ -11,9 +11,14 @@
   <ul id="results"></ul>
 
   <script>
+    // ✅ 유니코드 문자열을 안전하게 base64로 인코딩
+    function encodeToBase64(str) {
+      return btoa(unescape(encodeURIComponent(str)));
+    }
+
     async function search() {
       const query = document.getElementById("query").value;
-      const content = btoa(JSON.stringify({ query }));
+      const content = encodeToBase64(JSON.stringify({ query }));
 
       await fetch("https://api.github.com/repos/IIMarietteII/NaverSearch/contents/crawl_trigger.json", {
         method: "PUT",
@@ -32,17 +37,24 @@
     }
 
     async function loadResults() {
-      const res = await fetch("results.json");
-      const data = await res.json();
-      const list = document.getElementById("results");
-      list.innerHTML = "";
-      data.items.forEach(item => {
-        const li = document.createElement("li");
-        li.innerHTML = `<b>${item.title}</b><br>${item.description}<br><a href="${item.link}" target="_blank">원문 보기</a>`;
-        list.appendChild(li);
-      });
+      try {
+        const res = await fetch("results.json");
+        const data = await res.json();
+        const list = document.getElementById("results");
+        list.innerHTML = "";
+        data.items.forEach(item => {
+          const li = document.createElement("li");
+          li.innerHTML = `<b>${item.title}</b><br>
+            ${item.description}<br>
+            <a href="${item.link}" target="_blank">원문 보기</a>`;
+          list.appendChild(li);
+        });
+      } catch (e) {
+        console.error("결과를 불러오는 데 실패했습니다:", e);
+      }
     }
 
+    // 페이지 로드 시 자동 결과 불러오기
     loadResults();
   </script>
 </body>
