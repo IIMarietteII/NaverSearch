@@ -2,40 +2,20 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>네이버 블로그 검색기</title>
+  <title>네이버 블로그 검색기 (GitHub Actions 기반)</title>
 </head>
 <body>
   <h1>🔍 블로그 검색기</h1>
-  <input type="text" id="query" placeholder="검색어 입력">
-  <button onclick="search()">검색</button>
+  <p>1. 아래 버튼을 누르면 GitHub Actions로 이동합니다.</p>
+  <p>2. "Run workflow" 버튼을 눌러 검색어를 입력하고 실행하세요.</p>
+  <a href="https://github.com/IIMarietteII/NaverSearch/actions/workflows/crawl.yml" target="_blank">
+    ▶️ 검색어 입력하러 가기 (GitHub Actions 실행)
+  </a>
+
+  <h2>📄 검색 결과</h2>
   <ul id="results"></ul>
 
   <script>
-    // ✅ 유니코드 문자열을 안전하게 base64로 인코딩
-    function encodeToBase64(str) {
-      return btoa(unescape(encodeURIComponent(str)));
-    }
-
-    async function search() {
-      const query = document.getElementById("query").value;
-      const content = encodeToBase64(JSON.stringify({ query }));
-
-      await fetch("https://api.github.com/repos/IIMarietteII/NaverSearch/contents/crawl_trigger.json", {
-        method: "PUT",
-        headers: {
-          "Authorization": "Bearer YOUR_GITHUB_PAT",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          message: "Trigger search",
-          content: content,
-          sha: null
-        })
-      });
-
-      alert("🔄 검색어가 전송되었습니다. 잠시 후 결과가 생성됩니다.");
-    }
-
     async function loadResults() {
       try {
         const res = await fetch("results.json");
@@ -50,11 +30,10 @@
           list.appendChild(li);
         });
       } catch (e) {
-        console.error("결과를 불러오는 데 실패했습니다:", e);
+        document.getElementById("results").innerText = "⏳ 결과가 아직 없습니다. GitHub Actions에서 실행 후 잠시 후 새로고침 해주세요.";
       }
     }
 
-    // 페이지 로드 시 자동 결과 불러오기
     loadResults();
   </script>
 </body>
