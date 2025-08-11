@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>블로그 검색 및 저장기</title>
+  <title>네이버 블로그 검색기</title>
 </head>
 <body>
   <h1>🔍 블로그 검색기</h1>
@@ -13,43 +13,37 @@
   <script>
     async function search() {
       const query = document.getElementById("query").value;
-      const encoded = encodeURIComponent(query);
-      const url = `https://openapi.naver.com/v1/search/blog?query=${encoded}`;
-      const headers = {
-        "X-Naver-Client-Id": "MToyAl6U23_D3TEbgjUZ",
-        "X-Naver-Client-Secret": "L5hDYjkvku"
-      };
+      const content = btoa(JSON.stringify({ query }));
 
-      const res = await fetch("https://cors-anywhere.herokuapp.com/" + url, { headers });
-      const data = await res.json();
-
-      const list = document.getElementById("results");
-      list.innerHTML = "";
-      data.items.forEach(item => {
-        const li = document.createElement("li");
-        li.innerHTML = `<b>${item.title}</b><br>
-          ${item.description}<br>
-          <a href="${item.link}" target="_blank">원문 보기</a>
-          <button onclick='save("${item.link}")'>저장</button>`;
-        list.appendChild(li);
-      });
-    }
-
-    function save(link) {
-      const content = btoa(JSON.stringify({ link }));
-      fetch("https://api.github.com/repos/IIMarietteII/NaverSearch/contents/crawl_trigger.json", {
+      await fetch("https://api.github.com/repos/IIMarietteII/NaverSearch/contents/crawl_trigger.json", {
         method: "PUT",
         headers: {
           "Authorization": "Bearer YOUR_GITHUB_PAT",
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          message: "Trigger crawl",
+          message: "Trigger search",
           content: content,
           sha: null
         })
-      }).then(() => alert("📝 저장 요청이 전송되었습니다."));
+      });
+
+      alert("🔄 검색어가 전송되었습니다. 잠시 후 결과가 생성됩니다.");
     }
+
+    async function loadResults() {
+      const res = await fetch("results.json");
+      const data = await res.json();
+      const list = document.getElementById("results");
+      list.innerHTML = "";
+      data.items.forEach(item => {
+        const li = document.createElement("li");
+        li.innerHTML = `<b>${item.title}</b><br>${item.description}<br><a href="${item.link}" target="_blank">원문 보기</a>`;
+        list.appendChild(li);
+      });
+    }
+
+    loadResults();
   </script>
 </body>
 </html>
