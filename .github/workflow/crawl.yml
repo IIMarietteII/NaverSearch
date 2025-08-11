@@ -1,4 +1,4 @@
-name: Crawl Blog and Save
+name: Naver Blog Search
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - crawl_trigger.json
 
 jobs:
-  crawl:
+  search:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,19 +19,15 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: |
-          pip install selenium
-          sudo apt update
-          sudo apt install -y chromium-browser chromium-chromedriver
-          sudo ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
+        run: pip install requests
 
-      - name: Run crawler
+      - name: Run search
         run: python crawl.py
 
       - name: Commit results
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add output/
-          git commit -m "📄 Blog text saved"
+          git add results.json
+          git commit -m "🔍 Search results updated"
           git push
