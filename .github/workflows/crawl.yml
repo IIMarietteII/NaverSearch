@@ -1,9 +1,12 @@
-name: Naver Blog Search
+name: Naver Blog Search (Manual)
 
 on:
-  push:
-    paths:
-      - crawl_trigger.json
+  workflow_dispatch:
+    inputs:
+      query:
+        description: '검색어 입력'
+        required: true
+        default: '네고왕'
 
 jobs:
   search:
@@ -22,12 +25,12 @@ jobs:
         run: pip install requests
 
       - name: Run search
-        run: python crawl.py
+        run: python crawl.py "${{ github.event.inputs.query }}"
 
       - name: Commit results
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add results.json
-          git commit -m "🔍 Search results updated"
+          git commit -m "🔍 results.json updated"
           git push
