@@ -16,8 +16,8 @@
       const encoded = encodeURIComponent(query);
       const url = `https://openapi.naver.com/v1/search/blog?query=${encoded}`;
       const headers = {
-        "X-Naver-Client-Id": "YOUR_CLIENT_ID",
-        "X-Naver-Client-Secret": "YOUR_CLIENT_SECRET"
+        "X-Naver-Client-Id": "MToyAl6U23_D3TEbgjUZ",
+        "X-Naver-Client-Secret": "L5hDYjkvku"
       };
 
       const res = await fetch("https://cors-anywhere.herokuapp.com/" + url, { headers });
@@ -37,7 +37,7 @@
 
     function save(link) {
       const content = btoa(JSON.stringify({ link }));
-      fetch("https://api.github.com/repos/YOUR_USERNAME/YOUR_REPO/contents/crawl_trigger.json", {
+      fetch("https://api.github.com/repos/IIMarietteII/NaverSearch/contents/crawl_trigger.json", {
         method: "PUT",
         headers: {
           "Authorization": "Bearer YOUR_GITHUB_PAT",
